@@ -29,7 +29,7 @@ export default function Dashboard({ data, notify }) {
       <div className="heading-actions"><Link className="button button-secondary" to="/schedule"><CalendarDays size={17}/> Manage schedule</Link><button className="button button-primary" onClick={()=>{data.triggerReminder(nextMed?.name || 'Medicine');notify('Demo reminder triggered.','success')}}><BellRing size={17}/> Test reminder</button></div>
     </div>
 
-    <div className="demo-banner"><div><strong>{data.isDemo ? 'DEMO MODE' : 'SIMULATED DEVICE DATA'}</strong><span>Live ESP32 data is not connected. Dashboard values are simulated for your presentation.</span></div><Link to="/device">View device <ArrowRight size={15}/></Link></div>
+    <div className="demo-banner"><div><strong>{data.isDemo ? 'DEMO MODE' : 'ACCOUNT DATA'}</strong><span>{data.isDemo ? 'Demo data is stored locally for your presentation.' : 'Your medicines, schedules and history are stored in your Supabase account. Live ESP32 telemetry is not connected yet.'}</span></div><Link to="/device">View device <ArrowRight size={15}/></Link></div>
 
     <section className="stat-grid">
       <Stat icon={Pill} label="Today's Medicines" value={scheduled} meta="scheduled today"/>

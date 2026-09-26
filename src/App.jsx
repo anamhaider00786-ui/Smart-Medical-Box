@@ -84,6 +84,7 @@ export default function App() {
   }
 
   if (authLoading) return <div className="loading-state full-page-loading"><span className="spinner"/> Loading Smart Medical Box…</div>
+  if (authenticated && data.loading) return <div className="loading-state full-page-loading"><span className="spinner"/> Loading your Smart Medical Box data…</div>
   if (!authenticated) return <Routes><Route path="/reset-password" element={<ResetPassword onComplete={()=>navigate('/')} notify={notify}/>}/><Route path="*" element={<><Login onLogin={login} notify={notify}/><Toast toast={toast} onClose={()=>setToast(null)}/></>}/></Routes>
 
   return <AppLayout profile={data.profile} device={data.device} unreadCount={unreadCount} isDemo={data.isDemo} onLogout={logout}>
