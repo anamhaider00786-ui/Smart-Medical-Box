@@ -9,7 +9,7 @@ export default function Login({ onLogin, notify }) {
   const [loading,setLoading]=useState(false)
   const [error,setError]=useState('')
 
-  const demo = () => { sessionStorage.setItem('smb_auth','true'); onLogin() }
+  const demo = () => onLogin('demo')
   const submit = async e => {
     e.preventDefault(); setError('')
     if (!email || !password) return setError('Enter your email and password.')
@@ -36,7 +36,7 @@ export default function Login({ onLogin, notify }) {
         <form onSubmit={submit}>
           <label>Email<div className="input-icon"><Mail size={17}/><input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com"/></div></label>
           <label>Password<div className="input-icon"><LockKeyhole size={17}/><input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••"/></div></label>
-          <div className="login-options"><label className="checkbox-label"><input type="checkbox" checked={remember} onChange={e=>setRemember(e.target.checked)}/> Remember me</label><button type="button" className="link-button" onClick={()=>notify('Password recovery UI is ready for Supabase Auth configuration.','info')}>Forgot password?</button></div>
+          <div className="login-options"><label className="checkbox-label"><input type="checkbox" checked={remember} onChange={e=>setRemember(e.target.checked)}/> Remember me</label><button type="button" className="link-button" onClick={async ()=>{ if(!email) return setError('Enter your email first.'); if(!supabaseConfigured) return notify('Supabase is not configured. Password recovery is available after Supabase setup.','info'); setError(''); const { error } = await supabase.auth.resetPasswordForEmail(email,{redirectTo:`${window.location.origin}/reset-password`}); if(error) setError(error.message); else notify('Password reset email sent. Check your inbox.','info') }}>Forgot password?</button></div>
           {error && <div className="inline-error">{error}</div>}
           <button className="button button-primary button-wide" disabled={loading}>{loading?'Signing in…':'Login'} <ArrowRight size={17}/></button>
         </form>

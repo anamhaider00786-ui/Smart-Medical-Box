@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import Modal from './Modal'
+import { localDateKey } from '../utils/helpers'
 
-const blank = { name:'', dosage:'', notes:'', compartment:1, start_date:new Date().toISOString().slice(0,10), end_date:'', active:true }
+const blank = { name:'', dosage:'', notes:'', compartment:1, start_date:localDateKey(), end_date:'', active:true }
 
 export default function MedicineForm({ open, medicine, onClose, onSave }) {
   const [form, setForm] = useState(blank)
   const [error, setError] = useState('')
 
-  useEffect(() => setForm(medicine ? { ...blank, ...medicine } : blank), [medicine, open])
+  useEffect(() => { setForm(medicine ? { ...blank, ...medicine } : { ...blank }); setError('') }, [medicine, open])
   const set = (key, value) => setForm(prev => ({ ...prev, [key]: value }))
 
   const submit = e => {
@@ -15,8 +16,8 @@ export default function MedicineForm({ open, medicine, onClose, onSave }) {
     if (!form.name.trim() || !form.dosage.trim()) return setError('Medicine name and dosage are required.')
     if (Number(form.compartment) < 1 || Number(form.compartment) > 8) return setError('Compartment must be between 1 and 8.')
     if (form.end_date && form.start_date > form.end_date) return setError('End date must be on or after the start date.')
-    onSave({ ...form, compartment:Number(form.compartment) })
-    onClose()
+    const saved = onSave({ ...form, compartment:Number(form.compartment) })
+    if (saved !== false) onClose()
   }
 
   return <Modal open={open} title={medicine ? 'Edit medicine' : 'Add medicine'} onClose={onClose}>

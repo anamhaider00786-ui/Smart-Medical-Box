@@ -9,7 +9,9 @@ export default function ScheduleForm({ open, schedule, medicines, onClose, onSav
   const [error, setError] = useState('')
   useEffect(() => {
     const base = schedule ? { ...blank, ...schedule } : { ...blank, medicine_id: medicines[0]?.id || '', compartment: medicines[0]?.compartment || 1 }
+    delete base.medicine
     setForm(base)
+    setError('')
   }, [schedule, open, medicines])
 
   const set = (k,v) => setForm(p=>({...p,[k]:v}))
@@ -23,7 +25,7 @@ export default function ScheduleForm({ open, schedule, medicines, onClose, onSav
     e.preventDefault()
     if (!form.medicine_id) return setError('Select a medicine.')
     if (!form.days.length) return setError('Select at least one day.')
-    onSave({ ...form, compartment:Number(form.compartment) }); onClose()
+    const saved = onSave({ ...form, compartment:Number(form.compartment) }); if (saved !== false) onClose()
   }
 
   return <Modal open={open} title={schedule ? 'Edit schedule' : 'Create schedule'} onClose={onClose}>

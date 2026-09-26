@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ArrowRight, BellRing, CalendarDays, Check, ChevronRight, Clock3, Pill, Plus, RotateCcw, Timer, TrendingUp, XCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import StatusBadge from '../components/StatusBadge'
@@ -7,7 +7,7 @@ import { formatTime, getGreeting, percent } from '../utils/helpers'
 export default function Dashboard({ data, notify }) {
   const [now,setNow]=useState(new Date())
   const { medicines,schedules,logs }=data
-  const today = now.toISOString().slice(0,10)
+  const today = new Intl.DateTimeFormat('en-CA').format(now)
   const todayLogs = logs.filter(l=>l.scheduled_date===today)
   const taken=todayLogs.filter(l=>l.status==='Taken').length
   const pending=todayLogs.filter(l=>l.status==='Pending').length
@@ -18,12 +18,15 @@ export default function Dashboard({ data, notify }) {
   const [showAll,setShowAll]=useState(false)
   const rows = (showAll ? todayLogs : todayLogs.slice(0,6)).map(l=>({...l, medicine:medicines.find(m=>m.id===l.medicine_id)}))
 
-  useMemo(()=>{ const id=setInterval(()=>setNow(new Date()),1000); return ()=>clearInterval(id)},[])
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(new Date()), 1000)
+    return () => window.clearInterval(id)
+  }, [])
 
   return <div>
     <div className="page-heading">
       <div><span className="eyebrow">Smart Medical Box</span><h1>{getGreeting()}, {data.profile.name.split(' ')[0]}</h1><p>{now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})} • {now.toLocaleTimeString([], {hour:'numeric',minute:'2-digit',second:'2-digit'})}</p></div>
-      <div className="heading-actions"><Link className="button button-secondary" to="/schedule"><CalendarDays size={17}/> Manage schedule</Link><button className="button button-primary" onClick={()=>notify('Demo reminder triggered.','success')}><BellRing size={17}/> Test reminder</button></div>
+      <div className="heading-actions"><Link className="button button-secondary" to="/schedule"><CalendarDays size={17}/> Manage schedule</Link><button className="button button-primary" onClick={()=>{data.triggerReminder(nextMed?.name || 'Medicine');notify('Demo reminder triggered.','success')}}><BellRing size={17}/> Test reminder</button></div>
     </div>
 
     <div className="demo-banner"><div><strong>DEMO MODE</strong><span>Live ESP32 data is not connected. Dashboard values are simulated for your presentation.</span></div><Link to="/device">View device <ArrowRight size={15}/></Link></div>

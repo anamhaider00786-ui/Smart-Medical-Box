@@ -1,9 +1,7 @@
+import { localDateKey, addDays } from '../utils/helpers'
+
 const today = new Date()
-const dateKey = (offset = 0) => {
-  const d = new Date(today)
-  d.setDate(d.getDate() + offset)
-  return d.toISOString().slice(0, 10)
-}
+const dateKey = (offset = 0) => localDateKey(addDays(today, offset))
 
 export const demoMedicines = [
   { id: 'med-1', name: 'Paracetamol', dosage: '500 mg', notes: 'After food if required', compartment: 3, start_date: dateKey(-20), end_date: dateKey(20), active: true },

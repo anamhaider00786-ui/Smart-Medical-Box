@@ -1,10 +1,10 @@
-import { BatteryCharging, Cloud, Cpu, Droplets, Gauge, Radio, RefreshCw, Thermometer, Wifi, WifiOff } from 'lucide-react'
+import { BatteryCharging, Cloud, Cpu, Droplets, Radio, RefreshCw, Thermometer, Wifi } from 'lucide-react'
 import StatusBadge from '../components/StatusBadge'
 import { formatDateTime } from '../utils/helpers'
 
 export default function Device({ data, notify }) {
   const d=data.device
-  const sync=()=>{data.setDevice(p=>({...p,last_sync:new Date().toISOString(),connection:'Online'}));notify('Demo device sync refreshed.')}
+  const sync=()=>{data.simulateTelemetry();notify('Demo telemetry refreshed.')}
   return <div>
     <div className="page-heading"><div><span className="eyebrow">IoT device</span><h1>Device</h1><p>Connection and environmental telemetry for the Smart Medical Box.</p></div><button className="button button-secondary" onClick={sync}><RefreshCw size={16}/> Sync now</button></div>
     <div className="device-hero card"><div className="device-hero-icon"><Cpu size={30}/></div><div className="device-hero-copy"><span className="eyebrow">Device name</span><h2>{d.name}</h2><div className="device-id">ID {d.device_id}</div></div><div className="device-status"><StatusBadge status={d.connection}/><span>Last communication {formatDateTime(d.last_sync)}</span></div></div>

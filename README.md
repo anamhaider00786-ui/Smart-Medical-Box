@@ -304,3 +304,57 @@ smart-medical-box-web/
 ├── README.md
 └── vite.config.js
 ```
+
+## Render deployment
+
+For Render Static Site:
+
+- Build Command: `npm run build`
+- Publish Directory: `dist`
+- Root Directory: leave blank
+
+This repository includes `render.yaml` with the React Router SPA rewrite:
+
+```yaml
+routes:
+  - type: rewrite
+    source: /*
+    destination: /index.html
+```
+
+If the existing Render service was created from the Dashboard rather than the Blueprint, add the same rule under **Redirects/Rewrites**: Source `/*`, Destination `/index.html`, Action **Rewrite**.
+
+Render documents this rewrite as the required pattern for React Router client-side routes. citeturn1search0turn1search2
+
+## Authentication vs dashboard data
+
+Supabase email/password authentication is supported when Supabase is configured. Demo Mode remains available without Supabase.
+
+The current college-demo dashboard state is intentionally local and clearly labeled as Demo Data. The Supabase schema and service layer are prepared for the next integration step, but the browser does not pretend that local demo state is live database telemetry.
+
+## Password recovery
+
+When Supabase Auth is configured, **Forgot password?** sends a recovery email and opens `/reset-password` so the user can set a new password.
+
+## Verification checklist
+
+Before publishing a new build:
+
+```bash
+npm install
+npm run build
+```
+
+Then test:
+
+- Demo Mode login
+- Dashboard timer and reminder actions
+- Medicine add/edit/delete/search/filter
+- Schedule add/edit/delete and today's schedule sync
+- Compartment simulation
+- Medication history filters and custom dates
+- Notification read/delete actions
+- Device telemetry simulation
+- Settings persistence, dark mode and export
+- Logout/login
+- Direct refresh of `/medicines`, `/schedule`, `/device`, etc. on Render
