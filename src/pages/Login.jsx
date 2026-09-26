@@ -44,7 +44,7 @@ export default function Login({ onLogin, notify }) {
       setLoading(false)
       if (signUpError) return setError(signUpError.message)
       if (data.session) {
-        onLogin()
+        onLogin('supabase', data.session.user)
       } else {
         setMode('login')
         setPassword('')
@@ -59,7 +59,7 @@ export default function Login({ onLogin, notify }) {
     if (loginError) setError(loginError.message)
     else {
       if (remember) localStorage.setItem('smb_remember', 'true')
-      onLogin()
+      onLogin('supabase', (await supabase.auth.getUser()).data.user)
     }
   }
 

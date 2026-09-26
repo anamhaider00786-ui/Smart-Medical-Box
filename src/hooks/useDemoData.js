@@ -21,7 +21,7 @@ function initialState(key, fallback) {
   return sameDemoSession() ? readStored(key, fallback) : fallback
 }
 
-export function useDemoData(forceDemo = false) {
+export function useDemoData(forceDemo = false, authUser = null) {
   const [medicines, setMedicines] = useState(() => initialState('smb_medicines', demoMedicines))
   const [schedules, setSchedules] = useState(() => initialState('smb_schedules', demoSchedules))
   const [logs, setLogs] = useState(() => initialState('smb_logs', demoLogs))
@@ -30,7 +30,7 @@ export function useDemoData(forceDemo = false) {
   const [profile, setProfile] = useState(() => initialState('smb_profile', demoProfile))
   // The current UI state layer is local/demo even when Supabase Auth is configured.
   // This prevents the interface from falsely presenting local state as live database data.
-  const [isDemo, setIsDemo] = useState(true)
+  const [isDemo, setIsDemo] = useState(forceDemo)
 
   useEffect(() => {
     localStorage.setItem('smb_demo_date', localDateKey())
@@ -42,7 +42,13 @@ export function useDemoData(forceDemo = false) {
   useEffect(() => localStorage.setItem('smb_notifications', JSON.stringify(notifications)), [notifications])
   useEffect(() => localStorage.setItem('smb_device', JSON.stringify(device)), [device])
   useEffect(() => localStorage.setItem('smb_profile', JSON.stringify(profile)), [profile])
-  useEffect(() => setIsDemo(true), [forceDemo])
+  useEffect(() => setIsDemo(forceDemo), [forceDemo])
+  useEffect(() => {
+    if (forceDemo || !authUser) return
+    const fullName = authUser.user_metadata?.full_name?.trim()
+    const email = authUser.email || ''
+    setProfile(prev => ({ ...prev, name: fullName || (email ? email.split('@')[0] : prev.name), email }))
+  }, [forceDemo, authUser])
 
   const resetDemo = () => {
     setMedicines([...demoMedicines]); setSchedules([...demoSchedules]); setLogs([...demoLogs])

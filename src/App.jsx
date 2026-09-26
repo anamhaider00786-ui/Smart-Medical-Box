@@ -18,10 +18,11 @@ import { supabase, supabaseConfigured } from './services/supabase'
 export default function App() {
   const navigate = useNavigate()
   const [authenticated, setAuthenticated] = useState(false)
+  const [authUser, setAuthUser] = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [demoMode, setDemoMode] = useState(() => sessionStorage.getItem('smb_demo_auth') === 'true')
   const [toast, setToast] = useState(null)
-  const data = useDemoData(demoMode)
+  const data = useDemoData(demoMode, authUser)
   const notify = (message, type='success') => {
     setToast({message,type})
     window.clearTimeout(window.__smbToast)
@@ -33,36 +34,41 @@ export default function App() {
     let active = true
     if (sessionStorage.getItem('smb_demo_auth') === 'true') {
       setAuthenticated(true)
+      setAuthUser(null)
       setDemoMode(true)
       setAuthLoading(false)
       return () => { active = false }
     }
     if (!supabaseConfigured) {
       setAuthenticated(false)
+      setAuthUser(null)
       setAuthLoading(false)
       return () => { active = false }
     }
     supabase.auth.getSession().then(({ data: sessionData }) => {
       if (!active) return
       setAuthenticated(Boolean(sessionData.session))
+      setAuthUser(sessionData.session?.user ?? null)
       setDemoMode(false)
       setAuthLoading(false)
     })
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!active) return
       setAuthenticated(Boolean(session))
+      setAuthUser(session?.user ?? null)
       setDemoMode(false)
     })
     return () => { active = false; listener.subscription.unsubscribe() }
   }, [])
 
-  const login = (mode = 'supabase') => {
+  const login = (mode = 'supabase', user = null) => {
     if (mode === 'demo') {
       sessionStorage.setItem('smb_demo_auth', 'true')
       setDemoMode(true)
     } else {
       sessionStorage.removeItem('smb_demo_auth')
       setDemoMode(false)
+      if (user) setAuthUser(user)
     }
     setAuthenticated(true)
     navigate('/')
@@ -71,6 +77,7 @@ export default function App() {
   const logout = async () => {
     if (supabaseConfigured && !demoMode) await supabase.auth.signOut()
     sessionStorage.removeItem('smb_demo_auth')
+    setAuthUser(null)
     setAuthenticated(false)
     setDemoMode(false)
     navigate('/')
