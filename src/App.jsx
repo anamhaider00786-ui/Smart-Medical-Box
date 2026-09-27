@@ -64,6 +64,7 @@ export default function App() {
   const login = (mode = 'supabase', user = null) => {
     if (mode === 'demo') {
       sessionStorage.setItem('smb_demo_auth', 'true')
+      setAuthUser(null)
       setDemoMode(true)
     } else {
       sessionStorage.removeItem('smb_demo_auth')

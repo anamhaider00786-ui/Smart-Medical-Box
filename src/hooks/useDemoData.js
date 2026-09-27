@@ -92,13 +92,35 @@ export function useDemoData(forceDemo = false, authUser = null) {
 
   useEffect(() => {
     if (forceDemo) {
+      // Switching from an authenticated account to Demo Mode must reset every
+      // account-derived state. Otherwise React keeps the previous user's
+      // profile/device/data until a full page reload.
+      setMedicines(initialState('smb_medicines', demoMedicines))
+      setSchedules(initialState('smb_schedules', demoSchedules))
+      setLogs(initialState('smb_logs', demoLogs))
+      setNotifications(initialState('smb_notifications', demoNotifications))
+      setDevice(initialState('smb_device', demoDevice))
+      setProfileState(initialState('smb_profile', demoProfile))
+      setCompartmentRows([])
+      setError('')
       localStorage.setItem('smb_demo_date', localDateKey())
       localStorage.setItem('smb_demo_version', STORAGE_VERSION)
       setLoading(false)
       return
     }
+    if (!authUser) {
+      setMedicines([])
+      setSchedules([])
+      setLogs([])
+      setNotifications([])
+      setCompartmentRows([])
+      setDevice(emptyDevice())
+      setProfileState({ name: 'User', email: '' })
+      setLoading(false)
+      return
+    }
     loadUserData()
-  }, [forceDemo, loadUserData])
+  }, [forceDemo, authUser, loadUserData])
 
   useEffect(() => {
     if (!forceDemo) return
