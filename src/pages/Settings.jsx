@@ -2,15 +2,9 @@ import { Download, LogOut, Moon, RotateCcw, Save, Settings as SettingsIcon, Shie
 import { useEffect, useState } from 'react'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 
-export default function Settings({ data, notify, onLogout }) {
+export default function Settings({ data, notify, onLogout, dark, setDark }) {
   const [profile,setProfile] = useState(data.profile)
   const [reminders,setReminders] = useLocalStorage('smb_reminder_settings',{enabled:true,sound:true,snooze:10})
-  const [dark,setDark] = useLocalStorage('smb_dark_mode',false)
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark-theme', Boolean(dark))
-    return () => document.documentElement.classList.remove('dark-theme')
-  }, [dark])
 
   useEffect(() => setProfile(data.profile), [data.profile])
 

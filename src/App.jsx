@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useLocalStorage } from './hooks/useLocalStorage'
 import { Routes, Route, useNavigate } from 'react-router-dom'
 import AppLayout from './layouts/AppLayout'
 import Login from './pages/Login'
@@ -22,6 +23,11 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(true)
   const [demoMode, setDemoMode] = useState(() => sessionStorage.getItem('smb_demo_auth') === 'true')
   const [toast, setToast] = useState(null)
+  const [dark, setDark] = useLocalStorage('smb_dark_mode', false)
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark-theme', Boolean(dark))
+  }, [dark])
   const data = useDemoData(demoMode, authUser)
   const notify = (message, type='success') => {
     setToast({message,type})
@@ -98,7 +104,7 @@ export default function App() {
       <Route path="/history" element={<History data={data}/>}/>
       <Route path="/notifications" element={<Notifications data={data} notify={notify}/>}/>
       <Route path="/device" element={<Device data={data} notify={notify}/>}/>
-      <Route path="/settings" element={<Settings data={data} notify={notify} onLogout={logout}/>}/>
+      <Route path="/settings" element={<Settings data={data} notify={notify} onLogout={logout} dark={dark} setDark={setDark}/>}/>
       <Route path="/reset-password" element={<ResetPassword onComplete={()=>navigate('/')} notify={notify}/>}/>
     </Routes>
     <Toast toast={toast} onClose={()=>setToast(null)}/>
