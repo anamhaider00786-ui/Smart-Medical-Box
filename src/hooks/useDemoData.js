@@ -100,7 +100,7 @@ export function useDemoData(forceDemo = false, authUser = null) {
       setLogs(initialState('smb_logs', demoLogs))
       setNotifications(initialState('smb_notifications', demoNotifications))
       setDevice(initialState('smb_device', demoDevice))
-      setProfileState(initialState('smb_profile', demoProfile))
+      setProfileState({ ...demoProfile })
       setCompartmentRows([])
       setError('')
       localStorage.setItem('smb_demo_date', localDateKey())
